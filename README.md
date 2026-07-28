@@ -1,7 +1,7 @@
 # Weather Pocket
 
 ## 배포 URL
-*(Vercel 배포 후 생성된 URL을 입력합니다)*
+> https://weatherpocket.vercel.app
 
 ## GitHub Repository
 > https://github.com/mynarne/weather_pocket
