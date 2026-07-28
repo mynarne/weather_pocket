@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { CityWeather } from '@/types/weather';
 import { useFavoriteStore } from '@/stores/favoriteStore';
 import { useIsMounted } from '@/lib/hooks/useIsMounted';
-import { filterCities } from '@/lib/utils/filterCities';
 import { CityCard } from './CityCard';
 import { CityListFilter } from './CityListFilter';
 import { CitySearchInput } from './CitySearchInput';
@@ -15,28 +14,30 @@ interface CityListProps {
 }
 
 /**
- * 전국 17개 시·도 목록에 대한 관심 필터 및 지역 검색 기능을 결합한 Client Component
+ * 관심 지역 및 날씨 카드 목록 렌더링 컴포넌트
  */
 export function CityList({ citiesWeather }: CityListProps) {
   const [filter, setFilter] = useState<'all' | 'favorite'>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const isMounted = useIsMounted();
 
-  const favoriteCityIds = useFavoriteStore((state) => state.favoriteCityIds);
+  const favoriteRegionIds = useFavoriteStore((state) => state.favoriteRegionIds);
 
-  // 유효한 관심 도시 ID만 필터링
   const validFavoriteIds = isMounted
-    ? favoriteCityIds.filter((favId) =>
+    ? favoriteRegionIds.filter((favId) =>
         citiesWeather.some((item) => item.city.id === favId)
       )
     : [];
 
-  const filteredCitiesWeather = filterCities(
-    citiesWeather,
-    filter,
-    validFavoriteIds,
-    searchQuery
-  );
+  const filteredCitiesWeather = citiesWeather.filter((item) => {
+    if (filter === 'favorite' && !validFavoriteIds.includes(item.city.id)) {
+      return false;
+    }
+    if (searchQuery.trim()) {
+      return item.city.name.includes(searchQuery.trim());
+    }
+    return true;
+  });
 
   return (
     <div>
