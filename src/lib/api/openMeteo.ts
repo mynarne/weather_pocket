@@ -10,10 +10,11 @@ import { CITIES } from '@/constants/cities';
 import { mapCurrentWeather, mapDailyForecast } from '@/lib/mappers/weatherMapper';
 
 const OPEN_METEO_BASE_URL = 'https://api.open-meteo.com/v1/forecast';
+const FETCH_TIMEOUT_MS = 10_000; // 10초 타임아웃 설정
 
 /**
  * 단일 도시의 현재 날씨 데이터를 조회합니다.
- * Open-Meteo 요청에 15분(900초) 단위 데이터 재검증(revalidate)을 적용합니다.
+ * 15분 단위 데이터 재검증과 10초 타임아웃(AbortSignal.timeout)을 적용합니다.
  */
 export async function getCurrentWeather(city: City): Promise<CurrentWeather> {
   const url = new URL(OPEN_METEO_BASE_URL);
@@ -29,6 +30,7 @@ export async function getCurrentWeather(city: City): Promise<CurrentWeather> {
     next: {
       revalidate: 900,
     },
+    signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
   });
 
   if (!response.ok) {
@@ -47,7 +49,7 @@ export async function getCurrentWeather(city: City): Promise<CurrentWeather> {
 /**
  * 17개 지역의 현재 날씨를 조회합니다.
  * 1차로 Open-Meteo 다중 좌표(comma-separated) 단일 요청을 실행하여 1번의 HTTP 통신으로 17개 지역을 페칭하며,
- * 비정상 응답 시 2차로 개별 Promise.allSettled 폴백을 실행하도록 구성되었습니다.
+ * 비정상 응답 또는 타임아웃 시 2차로 개별 Promise.allSettled 폴백을 실행하도록 구성되었습니다.
  */
 export async function getAllCitiesWeather(): Promise<CityWeather[]> {
   try {
@@ -67,6 +69,7 @@ export async function getAllCitiesWeather(): Promise<CityWeather[]> {
       next: {
         revalidate: 900,
       },
+      signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
     });
 
     if (response.ok) {
@@ -139,6 +142,7 @@ export async function getCityForecast(city: City): Promise<CityForecast> {
     next: {
       revalidate: 900,
     },
+    signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
   });
 
   if (!response.ok) {

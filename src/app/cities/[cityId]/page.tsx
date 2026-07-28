@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { CITIES, findCityById } from '@/constants/cities';
+import { findCityById } from '@/constants/cities';
 import { getCityForecast } from '@/lib/api/openMeteo';
 import { CurrentWeatherSummary } from '@/components/forecast/CurrentWeatherSummary';
 import { ForecastList } from '@/components/forecast/ForecastList';
@@ -12,16 +12,9 @@ interface CityDetailPageProps {
 }
 
 /**
- * 17개 정적 도시 ID 목록에 대해 정적 파라미터를 생성함
- */
-export async function generateStaticParams() {
-  return CITIES.map((city) => ({
-    cityId: city.id,
-  }));
-}
-
-/**
  * 도시 상세 날씨 예보 페이지 (Server Component)
+ * 날씨 데이터의 실시간성과 빌드 타임 외부 API 의존성 해소를 위해
+ * 빌드 시점 사전 렌더링(generateStaticParams) 대신 사용자 요청 시 15분 재검증 온디맨드 렌더링을 적용함.
  */
 export default async function CityDetailPage({ params }: CityDetailPageProps) {
   const { cityId } = await params;
