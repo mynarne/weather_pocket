@@ -1,10 +1,10 @@
 # Weather Pocket
 
 ## 배포 URL
-*(Vercel 배포 후 생성된 URL을 입력합니다)*
+> https://weatherpocket.vercel.app/
 
 ## GitHub Repository
-*(제출용 GitHub Repository URL을 입력합니다)*
+> https://github.com/mynarne/weather_pocket
 
 ## 서비스 소개
 Weather Pocket은 대한민국 전국 16개 광역자치단체 및 205개 시·군·구 단위로 날씨를 조회하고, 원하는 지역을 관심 지역(최대 5개)으로 관리할 수 있는 Next.js 기반 날씨 애플리케이션입니다.
